@@ -1,0 +1,36 @@
+version: '3.4'
+
+services:
+  wuhu:
+    image: wuhu
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports: 
+      - 8080:8080
+      - 8090:8090
+    volumes:
+      - www_party:/var/www/www_party
+      - www_admin:/var/www/www_admin
+      - entries_private:/var/www/entries_private
+      - entries_public:/var/www/entries_public
+      - screenshots:/var/www/screenshots
+  mariadb: 
+    image: mariadb
+    restart: always
+    environment: 
+      MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+      MARIADB_DATABASE: wuhu
+      MARIADB_USER: wuhu
+      MARIADB_PASSWORD: secret
+    volumes:
+      - database:/var/lib/mysql
+
+volumes:
+  www_party:
+  www_admin:
+  entries_private:
+  entries_public:
+  screenshots:
+  database:
+
