@@ -33,8 +33,6 @@ COPY config/php.ini "$PHP_INI_DIR/php.ini"
 COPY config/wuhu.conf /etc/apache2/sites-available/
 
 
-# RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf &&\
     echo "Listen 8080" >> /etc/apache2/apache2.conf &&\
     echo "Listen 8090" >> /etc/apache2/apache2.conf &&\
@@ -44,20 +42,9 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf &&\
     a2ensite wuhu &&\
     service apache2 restart
 
-# RUN a2ensite wuhu
-# RUN service apache2 restart
-
-# ENV APACHE_RUN_DIR=/var/run/apache2
-# ENV APACHE_LOCK_DIR=/var/lock/apache2
-# ENV APACHE_LOG_DIR=/var/log/apache
-# ENV APACHE_RUN_USER=www-data
-# ENV APACHE_RUN_GROUP=www-data
-# ENV APACHE_PID_FILE=/var/run/apache2/apache2.pid
-
 
 EXPOSE 8080
 EXPOSE 8090
 EXPOSE 80
 
-#CMD ["/usr/sbin/apache2"]
     
