@@ -162,9 +162,6 @@ function perform(&$msg) {
     }
 
     $queries = array(
-      sprintf_esc("insert into settings (setting,value) values ('private_ftp_dir' ,'%s')",$_POST["private_ftp_dir"]),
-      sprintf_esc("insert into settings (setting,value) values ('public_ftp_dir'  ,'%s')",$_POST["public_ftp_dir"]),
-      sprintf_esc("insert into settings (setting,value) values ('screenshot_dir'  ,'%s')",$_POST["screenshot_dir"]),
       sprintf_esc("insert into settings (setting,value) values ('screenshot_sizex','%s')",$_POST["screenshot_sizex"]),
       sprintf_esc("insert into settings (setting,value) values ('screenshot_sizey','%s')",$_POST["screenshot_sizey"]),
       sprintf_esc("insert into settings (setting,value) values ('voting_type'     ,'%s')",$_POST["voting_type"]),
@@ -183,16 +180,32 @@ function perform(&$msg) {
 
   $salt = "";
   for($x=0;$x<64;$x++) $salt.=chr(rand(0x30,0x7a));
-  $db =
-  "<"."?php\n".
-  "define('SQL_HOST', \"".addslashes($_POST["mysql_host"])."\");\n".
-  "define('SQL_USERNAME',\"".addslashes($_POST["mysql_username"])."\");\n".
-  "define('SQL_PASSWORD',\"".addslashes($_POST["mysql_password"])."\");\n".
-  "define('SQL_DATABASE',\"".addslashes($_POST["mysql_database"])."\");\n".
-  "define('WWW_DIR',\"".$_POST["main_www_dir"]."\");\n".
-  "define('ADMIN_DIR',\"".dirname($_SERVER["SCRIPT_FILENAME"])."\");\n".
-  "define('PASSWORD_SALT',\"".addslashes($salt)."\");\n".
-  "?".">\n";
+
+  if ($_ENV["SQL_HOST"]) {
+    $db =
+      "<" . "?php\n" .
+      "define('SQL_HOST', \"" . addslashes($_ENV["SQL_HOST"]) . "\");\n" .
+      "define('SQL_USERNAME',\"" . addslashes($_ENV["SQL_USERNAME"]) . "\");\n" .
+      "define('SQL_PASSWORD',\"" . addslashes($_ENV["SQL_PASSWORD"]) . "\");\n" .
+      "define('SQL_DATABASE',\"" . addslashes($_ENV["SQL_DATABASE"]) . "\");\n" .
+      "define('WWW_DIR',\"" . $_ENV["WWW_DIR"] . "\");\n" .
+      "define('ADMIN_DIR',\"" . $_ENV["ADMIN_DIR"] . "\");\n" .
+      "define('PASSWORD_SALT',\"" . addslashes($salt) . "\");\n" .
+      "?" . ">\n";
+  } else {
+
+    $db =
+    "<"."?php\n".
+    "define('SQL_HOST', \"".addslashes($_POST["mysql_host"])."\");\n".
+    "define('SQL_USERNAME',\"".addslashes($_POST["mysql_username"])."\");\n".
+    "define('SQL_PASSWORD',\"".addslashes($_POST["mysql_password"])."\");\n".
+    "define('SQL_DATABASE',\"".addslashes($_POST["mysql_database"])."\");\n".
+    "define('WWW_DIR',\"".$_POST["main_www_dir"]."\");\n".
+    "define('ADMIN_DIR',\"".dirname($_SERVER["SCRIPT_FILENAME"])."\");\n".
+    "define('PASSWORD_SALT',\"".addslashes($salt)."\");\n".
+    "?".">\n";
+  }
+
 
   file_put_contents("database.inc.php",$db);
   file_put_contents($_POST["main_www_dir"]."/database.inc.php",$db);

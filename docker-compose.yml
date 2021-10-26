@@ -1,20 +1,69 @@
-version: '3.4'
+version: '3.9'
 
 services:
-  wuhu:
-    image: wuhu
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    ports: 
-      - 8080:8080
-      - 8090:8090
+
+  proxy:
+    # The official v2 Traefik docker image
+    image: traefik:v2.5
+    # Enables the web UI and tells Traefik to listen to docker
+    command: 
+    - "--api.insecure=true"
+    - "--providers.docker=true"
+    - "--providers.docker.exposedbydefault=false"
+    - "--entrypoints.web.address=:80"
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
     volumes:
-      - www_party:/var/www/www_party
-      - www_admin:/var/www/www_admin
-      - entries_private:/var/www/entries_private
-      - entries_public:/var/www/entries_public
-      - screenshots:/var/www/screenshots
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+
+
+  wuhu-admin:
+    # build:  .
+    image: crunchgeek/php-fpm:7.3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wuhu-admin.entrypoints=web"  
+      - "traefik.http.routers.wuhu-admin.rule=Host(`admin.wuhu.localhost`)"
+      - "traefik.http.middlewares.adminauth.basicauth.users=admin:$$2y$$05$$jjSjd5WSr9VwciWt.Fxg1.AcuUWsVck0heO.seXZMPKg1Q/rnEwo2"
+      - "traefik.http.routers.wuhu-admin.middlewares=adminauth"
+    entrypoint: php -S 0.0.0.0:8000 -t /app/admin/
+    # entrypoint: php -ini
+    ports: 
+      - 8000:8000
+    volumes:
+      - ./config:/config
+      - ./www_admin:/app/admin
+      - ./www_party:/app/party
+      - ./partydata/entries_private:/app/entries_private
+      - ./partydata/entries_public:/app/entries_public
+      - ./partydata/screenshots:/app/screenshots
+    env_file:
+      - ./config/wuhu.env
+    environment:
+      PHP_INI_PATH: "/config/php.ini"
+
+
+  wuhu-party:
+    # build:  .
+    image: crunchgeek/php-fpm:7.3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wuhu-party.entrypoints=web"  
+      - "traefik.http.routers.wuhu-party.rule=Host(`party.wuhu.localhost`)"
+    entrypoint: php -S 0.0.0.0:8001 -t /app/party/
+    # entrypoint: php -ini
+    ports: 
+      - 8001:8001
+    volumes_from:
+      - wuhu-admin:rw
+    env_file:
+      - ./config/wuhu.env
+
+
   mariadb: 
     image: mariadb
     restart: always
@@ -24,13 +73,10 @@ services:
       MARIADB_USER: wuhu
       MARIADB_PASSWORD: secret
     volumes:
-      - database:/var/lib/mysql
+      - ./dbdata:/var/lib/mysql
+      - ./config/sql:/docker-entrypoint-initdb.d
 
-volumes:
-  www_party:
-  www_admin:
-  entries_private:
-  entries_public:
-  screenshots:
-  database:
+    
+
+
 

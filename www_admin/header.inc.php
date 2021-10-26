@@ -1,5 +1,12 @@
 <?php
 define("ADMIN_PAGE",true);
+define("SQL_HOST", $_ENV["SQL_HOST"]);
+define("SQL_USERNAME", $_ENV["SQL_USERNAME"]);
+define("SQL_PASSWORD", $_ENV["SQL_PASSWORD"]);
+define("SQL_DATABASE", $_ENV["SQL_DATABASE"]);
+define("WWW_DIR", $_ENV["WWW_DIR"]);
+define("ADMIN_DIR", $_ENV["ADMIN_DIR"]);
+define("PASSWORD_SALT", $_ENV["PASSWORD_SALT"]);
 include_once("bootstrap.inc.php");
 
 run_hook("admin_page_start");

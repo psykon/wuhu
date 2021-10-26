@@ -1,13 +1,23 @@
 <?php
 session_start();
-if (!file_exists("database.inc.php")) {
-  die("The system is not yet configured - please go to the admin panel to do so.");
-}
+// if (!file_exists("database.inc.php")) {
+//   die("The system is not yet configured - please go to the admin panel to do so.");
+// }
 
-/////////////////////////////////////////////////
-// bootstrap
+// /////////////////////////////////////////////////
+// // bootstrap
 
-include_once("database.inc.php");
+// include_once("database.inc.php");
+
+define("SQL_HOST", $_ENV["SQL_HOST"]);
+define("SQL_USERNAME", $_ENV["SQL_USERNAME"]);
+define("SQL_PASSWORD", $_ENV["SQL_PASSWORD"]);
+define("SQL_DATABASE", $_ENV["SQL_DATABASE"]);
+define("WWW_DIR", $_ENV["WWW_DIR"]);
+define("ADMIN_DIR", $_ENV["ADMIN_DIR"]);
+define("PASSWORD_SALT", $_ENV["PASSWORD_SALT"]);
+
+
 include_once(ADMIN_DIR . "/bootstrap.inc.php");
 include_once("minuswiki.inc.php");
 
