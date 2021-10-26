@@ -1,9 +1,10 @@
 <?php
-if (!file_exists("database.inc.php"))
-{
-  include_once("config.php");
-  exit();
-}
+
+// if (!file_exists("database.inc.php"))
+// {
+//   include_once("config.php");
+//   exit();
+// }
 include_once("header.inc.php");
 
 run_hook("admin_index_start");
